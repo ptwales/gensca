@@ -1,0 +1,16 @@
+{
+  "name": "GenSca",
+  "version": "1.0.0",
+  "description": "Generate circe codecs from har files",
+  "main": "index.js",
+  "author": "Philip Wales <me@ptwales.net>",
+  "license": "AGPL",
+  "private": true,
+  "dependencies": {
+    "generate-schema": "^2.6.0",
+    "json-schema-to-case-class": "^1.2.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.3.2"
+  }
+}
