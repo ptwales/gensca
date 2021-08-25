@@ -1,32 +1,36 @@
+#!/usr/bin/env node
+
 const fs = require("fs");
 const GenerateSchema = require("generate-schema");
 const SchemaConverter = require("json-schema-to-case-class");
+const cli = require("cli");
+const util = require("util");
 
-const scalaConfig = { classParamsTextCase: "ignoreCase" };
+const scalaModelsFromJsonData = (name, config, json) =>
+  new Promise((resolve) => resolve(GenerateSchema.json(name, json)))
+    .then((schema) => (schema.type === "array" ? schema.items : schema))
+    .then((schema) => SchemaConverter.convert(schema, config));
 
-const addJsonCodecs = (scalaText) =>
-  scalaText
-    .split("\n")
-    .map((line) =>
-      line.startsWith("case class") ? "@JsonCodec " + line : line
-    )
-    .join("\n");
+const readStdin = () =>
+  new Promise((resolve) => cli.withStdin((text) => resolve(text)));
 
-const addPrefixes = (scalaText) =>
-  `package datasembly.galactus.sources
+const jsonFromStdin = () => readStdin().then((text) => JSON.parse(text));
 
-import io.circe.generic.JsonCodec
+const jsonFromFile = (path) =>
+  util
+    .promisify(fs.readFile)(path, "utf-8")
+    .then((data) => JSON.parse(data));
 
-${scalaText}`;
+const main = () => {
+  const options = cli.parse({
+    file: ["f", "A json file to read", "file", false],
+  });
+  const scalaConfig = { classParamsTextCase: "ignoreCase" };
+  let json = options.file ? jsonFromFile(options.file) : jsonFromStdin();
+  json
+    .then((json) => scalaModelsFromJsonData("name", scalaConfig, json))
+    .then((scala) => console.log(scala))
+    .catch((err) => console.error(err));
+};
 
-new Promise((resolve) =>
-  resolve(fs.readFileSync("./clubhouse-members.json", "utf-8"))
-)
-  .then((text) => JSON.parse(text))
-  .then((json) => GenerateSchema.json("Members", json))
-  .then((schema) => (schema.type === "array" ? schema.items : schema))
-  .then((schema) => SchemaConverter.convert(schema, scalaConfig))
-  .then((scala) => addJsonCodecs(scala))
-  .then((scala) => addPrefixes(scala))
-  .then((scala) => console.log(scala))
-  .catch((err) => console.error(err));
+main();
