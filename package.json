@@ -8,8 +8,7 @@
   "private": true,
   "dependencies": {
     "cli": "^1.0.1",
-    "generate-schema": "^2.6.0",
-    "json-schema-to-case-class": "^1.2.0"
+    "transform-json-types": "^0.7.0"
   },
   "devDependencies": {
     "prettier": "^2.3.2"
