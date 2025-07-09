@@ -1,4 +1,9 @@
-# GenSca
+
+# DEPRECATED
+
+** See my [scala branch](https://github.com/ptwales/json_typegen/tree/scala) for
+[json_typegen](https://github.com/evestera/json_typegen). **
+
 
 Create free circe decoders from json data.
 
@@ -18,5 +23,5 @@ by their dependencies.
 - [ ] Sort derived decoders
 - [ ] De-pluralize names with array values
 - Provide options for:
-  - [ ] Different root class name
+  - [x] Different root class name
   - [ ] Different json libraries
